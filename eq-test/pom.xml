@@ -12,7 +12,8 @@
     <artifactId>eq-test</artifactId>
 
     <properties>
-        <generated.class.directory>${project.basedir}/target/generated-sources/java</generated.class.directory>
+        <!--<generated.class.directory>${project.basedir}/target/generated-sources/java</generated.class.directory>-->
+        <generated.class.directory>${project.basedir}/src/test/generated-sources/java</generated.class.directory>
     </properties>
 
     <dependencies>
