@@ -18,7 +18,9 @@ public class Template {
         return sb.toString();
     }
     public String getClassName(Class clazz) {
-        classNames.add(clazz.getName());
+        if (clazz != byte[].class) {
+            classNames.add(clazz.getName());
+        }
         return clazz.getSimpleName();
     }
 

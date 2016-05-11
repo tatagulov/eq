@@ -48,6 +48,7 @@ public class JDBCDatabaseExtractor implements DatabaseExtractor{
         ResultSet rs = connection.getMetaData().getTables(null,schemaPattern,null,new String[]{"TABLE"});
         while (rs.next()) {
             String schemaName = rs.getString("TABLE_SCHEM");
+            if (schemaName==null) schemaName = rs.getString("TABLE_CAT");
             String tableName = rs.getString("TABLE_NAME");
             Schema schema = dataBase.findSchema(schemaName);
             if (schema==null) schema = new Schema(dataBase, schemaName);
@@ -147,10 +148,12 @@ public class JDBCDatabaseExtractor implements DatabaseExtractor{
                 List<Column> fkColumns = new LinkedList<Column>();
                 while (resultSet.next()) {
                     String pkSchemaName = resultSet.getString("PKTABLE_SCHEM");
+                    if (pkSchemaName==null) pkSchemaName = resultSet.getString("PKTABLE_CAT");
                     String pkTableName = resultSet.getString("PKTABLE_NAME");
                     String pkColumnName = resultSet.getString("PKCOLUMN_NAME");
 
                     String fkSchemaName = resultSet.getString("FKTABLE_SCHEM");
+                    if (fkSchemaName==null) fkSchemaName = resultSet.getString("FKTABLE_CAT");
                     String fkTableName = resultSet.getString("FKTABLE_NAME");
                     String fkColumnName = resultSet.getString("FKCOLUMN_NAME");
                     short keySeq = resultSet.getShort("KEY_SEQ");

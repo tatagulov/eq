@@ -75,9 +75,9 @@ public class ColumnGenerator extends Template {
 
     private String getColumnVarName() {
         String databaseVarName = Utils.toCamelCaseFirstLower(column.table.schema.dataBase.databaseName);
-        String schemaVarName = Utils.toCamelCaseFirstLower(column.table.schema.schemaName);
+        String schemaVarName = column.table.schema.schemaName == null ? null : Utils.toCamelCaseFirstLower(column.table.schema.schemaName);
         String tableVarName = Utils.toCamelCaseFirstLower(column.table.tableName);
-        return databaseVarName+"."+schemaVarName+"." +tableVarName + "." +column.columnName;
+        return databaseVarName+"."+(schemaVarName==null?"": schemaVarName + ".") +tableVarName + "." +column.columnName;
     }
 
     public String getVarText() {

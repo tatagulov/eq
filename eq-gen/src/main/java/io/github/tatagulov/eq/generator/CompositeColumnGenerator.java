@@ -67,9 +67,9 @@ public class CompositeColumnGenerator extends Template {
 
     private String getTableVarName(Table table) {
         String databaseVarName = Utils.toCamelCaseFirstLower(table.schema.dataBase.databaseName);
-        String schemaVarName = Utils.toCamelCaseFirstLower(table.schema.schemaName);
+        String schemaVarName = table.schema.schemaName == null ? null :Utils.toCamelCaseFirstLower(table.schema.schemaName);
         String tableVarName = Utils.toCamelCaseFirstLower(table.tableName);
-        return databaseVarName+"."+schemaVarName+"." +tableVarName;
+        return databaseVarName+"."+(schemaVarName==null?"": schemaVarName + ".")+tableVarName;
     }
 
     public String getVarText() {

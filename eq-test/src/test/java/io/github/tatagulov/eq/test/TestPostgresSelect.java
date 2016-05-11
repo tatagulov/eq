@@ -8,6 +8,8 @@ import io.github.tatagulov.test.testData.entity.db.public_.PersonMove;
 import io.github.tatagulov.test.testData.entity.db.public_.PersonType;
 import org.junit.Test;
 
+import java.sql.Date;
+
 import static io.github.tatagulov.eq.metadata.sql.ParamExpression.param;
 import static io.github.tatagulov.eq.metadata.sql.SQLFunction.*;
 import static io.github.tatagulov.eq.metadata.sql.ValueExpression.value;
@@ -429,5 +431,53 @@ public class TestPostgresSelect {
         assertEquals(values.length, 2);
         assertEquals(values[0], TEST_SHORT_VALUE);
         assertEquals(values[1], TEST_SHORT_VALUE2);
+    }
+
+    @Test
+    public void testSQL() throws Exception {
+
+        boolean filterCurrentData = true;
+        boolean showCountMove = true;
+        boolean showPersonType = true;
+        Short fromDepId = 123;
+        Integer personId = 456;
+
+        Person person = new Person();
+        PersonMove innerPersonMove = person.person_id.innerPersonMove(); // здесь идет inner Join нужно для where
+        PersonMove leftPersonMove = person.person_id.leftPersonMove();// здесь идет left Join нужно для select
+
+        // Для фильтра использует inner join
+        if (filterCurrentData) innerPersonMove.where(innerPersonMove.move_date.eq(param(new Date(System.currentTimeMillis()))));
+        if (fromDepId!=null) innerPersonMove.where(innerPersonMove.from_dep_id.eq(param(fromDepId)));
+
+        if (personId!=null) person.where(person.person_id.eq(param(personId)));
+
+        Select select = new PostgresSelect();
+        select.select(person.first_name);
+        select.select(person.last_name);
+        // здесь идет inline join
+        if (showPersonType) select.select(person.person_type_id.innerPersonType().person_type_name);
+
+        // при чем можем соединять несколько раз, в итоге все равно будет только один Join
+        if (showPersonType) select.select(person.person_type_id.innerPersonType().person_type_id);
+
+        // считаем count, секция group by автоматически заполнится
+        if (showCountMove) select.select(count(leftPersonMove.person_move_id).as("person_move_cnt"));
+
+        System.out.println(select.getSQL());
+    }
+
+    @Test
+    public void testOrderByJoin() throws Exception {
+
+
+        Person person = new Person();
+
+        Select select = new PostgresSelect();
+        select.select(person.last_name);
+
+        select.orderBy(person.person_type_id.innerPersonType().person_type_name);
+
+        System.out.println(select.getSQL());
     }
 }

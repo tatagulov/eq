@@ -18,6 +18,7 @@ public class DataBase {
 
     public Schema findSchema(String schemaName) {
         for (Schema schema : schemas) {
+            if (schema.schemaName == null) return schema;
             if (schema.schemaName.equalsIgnoreCase(schemaName)) return schema;
         }
         return null;

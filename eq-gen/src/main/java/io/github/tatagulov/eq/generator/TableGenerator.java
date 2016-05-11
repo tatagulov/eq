@@ -62,9 +62,9 @@ public class TableGenerator<K extends Table<K>> extends Template {
 
     private String getTableVarName() {
         String databaseVarName = Utils.toCamelCaseFirstLower(table.schema.dataBase.databaseName);
-        String schemaVarName = Utils.toCamelCaseFirstLower(table.schema.schemaName);
+        String schemaVarName = table.schema.schemaName == null? null :Utils.toCamelCaseFirstLower(table.schema.schemaName);
         String tableVarName = Utils.toCamelCaseFirstLower(table.tableName);
-        return databaseVarName+"."+schemaVarName+"." +tableVarName;
+        return databaseVarName+"."+(schemaVarName==null? "" : schemaVarName)+"." +tableVarName;
     }
 
     public void save() throws IOException {

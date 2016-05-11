@@ -19,21 +19,21 @@ public abstract class From {
         for (From childTable : childFroms) {
             sb.append(childTable.getFromSQL(aliasGenerator));
         }
-        if (condition!=null) sb.append(condition.getSQL(aliasGenerator));
+        if (condition != null) sb.append(condition.getSQL(aliasGenerator));
         return sb.toString();
     }
 
     protected abstract String getBodySQL(AliasGenerator aliasGenerator);
 
     From getRootFrom() {
-        if (parent!=null) {
+        if (parent != null) {
             parent.childFroms.add(this);
             return parent.getRootFrom();
         }
         return this;
     }
 
-    public <T extends From,L extends From,M> L join(JoinType joinType,BaseColumn<T, M> leftSelectColumn, BaseColumn<L, M> rightSelectColumn) {
+    public <T extends From, L extends From, M> L join(JoinType joinType, BaseColumn<T, M> leftSelectColumn, BaseColumn<L, M> rightSelectColumn) {
         final L selectTable = rightSelectColumn.getSelectTable();
         selectTable.joinType = joinType;
         selectTable.where(new TwoCondition<M>(leftSelectColumn, Criteria.EQ, rightSelectColumn));
@@ -41,9 +41,22 @@ public abstract class From {
         return selectTable;
     }
 
+    public <T extends From, L extends From, M> L join(JoinType joinType, SelectCompositeColumn<T,M> leftSelectCompositeColumn, SelectCompositeColumn<L,M> rightSelectCompositeColumn) {
+        final L selectTable = rightSelectCompositeColumn.selectTable;
+        selectTable.joinType = joinType;
+        for (int i = 0; i < leftSelectCompositeColumn.sqlColumns.length; i++) {
+            SQLColumn leftSelectColumn = leftSelectCompositeColumn.sqlColumns[i];
+            SQLColumn rightSelectColumn = rightSelectCompositeColumn.sqlColumns[i];
+            selectTable.where(new TwoCondition<M>(leftSelectColumn, Criteria.EQ, rightSelectColumn));
+        }
+        selectTable.parent = this;
+        return selectTable;
+    }
+
+
     public Condition where(Condition newCondition) {
-        if (parent!=null) parent.childFroms.add(this);
-        if (condition==null) {
+        if (parent != null) parent.childFroms.add(this);
+        if (condition == null) {
             newCondition.conditionType = joinType == null ? ConditionType.where : ConditionType.on;
             condition = newCondition;
         } else {
@@ -59,7 +72,7 @@ public abstract class From {
         for (From childFrom : childFroms) {
             paramExpressions.addAll(childFrom.getParamExpressions());
         }
-        if (condition!=null) paramExpressions.addAll(condition.getParamExpressions());
+        if (condition != null) paramExpressions.addAll(condition.getParamExpressions());
         return paramExpressions;
     }
 

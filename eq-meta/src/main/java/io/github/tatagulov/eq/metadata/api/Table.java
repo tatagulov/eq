@@ -35,7 +35,7 @@ public class Table<K extends Table<K>> {
     }
 
     public String getFullTableName() {
-        return schema.schemaName+ "."  + tableName;
+        return (schema.schemaName==null ? "" : schema.schemaName+ ".")  + tableName;
     }
 
     public CompositeColumn getCompositeColumn(Column[] columns) {

@@ -40,7 +40,6 @@ public class DataBaseGenerator extends Template {
 
         String importSection = getImportSection();
 
-
         add("package %s;\n\n",dbPackage);
         add(importSection);
         add("public class %s extends %s {\n",dbClassName,dataBaseClass);
@@ -102,15 +101,15 @@ public class DataBaseGenerator extends Template {
     private static String getColumnText(Column column) {
         String columnName = column.columnName;
         String tableName = Utils.toCamelCaseFirstLower(column.table.tableName);
-        String schemaName = Utils.toCamelCaseFirstLower(column.table.schema.schemaName);
-        return schemaName + "." + tableName + "." +columnName;
+        String schemaName = column.table.schema.schemaName ==null ? null : Utils.toCamelCaseFirstLower(column.table.schema.schemaName);
+        return (schemaName==null?"": schemaName + ".") + tableName + "." +columnName;
     }
 
     private String getCompositeColumnText(CompositeColumn primaryCompositeColumn) {
         String columnName = primaryCompositeColumn.getName();
         String tableName = Utils.toCamelCaseFirstLower(primaryCompositeColumn.table.tableName);
-        String schemaName = Utils.toCamelCaseFirstLower(primaryCompositeColumn.table.schema.schemaName);
-        return schemaName + "." + tableName + "." +columnName;
+        String schemaName = primaryCompositeColumn.table.schema.schemaName == null ? null : Utils.toCamelCaseFirstLower(primaryCompositeColumn.table.schema.schemaName);
+        return (schemaName==null?"": schemaName + ".") + tableName + "." +columnName;
     }
 
 

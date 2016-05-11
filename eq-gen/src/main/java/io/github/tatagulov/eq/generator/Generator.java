@@ -14,7 +14,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-@Mojo( name = "generate" ,defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo( name = "generate" )
 public class Generator extends AbstractMojo {
 
     @Parameter( property = "userName")
