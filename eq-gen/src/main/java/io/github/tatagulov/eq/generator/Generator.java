@@ -41,8 +41,12 @@ public class Generator extends AbstractMojo {
     @Parameter(property = "schemaPattern")
     public String schemaPattern;
 
+
     @Parameter(property = "extractorClassName")
     public String extractorClassName;
+
+    @Parameter(property = "deleteTargetFolder")
+    public Boolean deleteTargetFolder ;
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -57,8 +61,9 @@ public class Generator extends AbstractMojo {
             } finally {
                 connection.close();
             }
-
-            FileUtils.deleteDirectory(new File(targetFolder));
+            if (deleteTargetFolder!= null && deleteTargetFolder) {
+                FileUtils.deleteDirectory(new File(targetFolder));
+            }
             new DataBaseGenerator(dataBase,packageName,targetFolder);
 
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package io.github.tatagulov.eq.generator;
 
 import io.github.tatagulov.eq.generator.exception.GenerateException;
 import io.github.tatagulov.eq.metadata.api.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +26,7 @@ public class DataBaseGenerator extends Template {
     private void generateManyClass(DataBase dataBase, String dbPackage, String path) throws IOException, GenerateException {
 
         File rootDir = new File(path);
-        if (rootDir.exists()) deleteDirectory(rootDir);
+        if (rootDir.exists()) FileUtils.deleteDirectory(rootDir);
 
         String dbPath = path + File.separator + Utils.replacePackageToPath(dbPackage);
         Utils.checkDir(dbPath);
@@ -72,17 +73,6 @@ public class DataBaseGenerator extends Template {
         fileOutputStream.close();
     }
 
-
-
-    public static void deleteDirectory(File directory) throws IOException {
-        if (!directory.exists()) {
-            return;
-        }
-        if (!directory.delete()) {
-            String message = "Unable to delete directory " + directory + ".";
-            throw new IOException(message);
-        }
-    }
 
     private String getSchemaSection(DataBase dataBase, String dbPackage, String dbPath) throws IOException, GenerateException {
         StringBuilder sb = new StringBuilder();

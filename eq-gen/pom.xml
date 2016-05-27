@@ -5,18 +5,25 @@
     <parent>
         <groupId>io.github.tatagulov</groupId>
         <artifactId>eq</artifactId>
-        <version>0.1.1</version>
+        <version>0.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eq-gen</artifactId>
     <packaging>maven-plugin</packaging>
 
+    <distributionManagement>
+        <repository>
+            <id>kgd</id>
+            <url>http://${archiva.server}/archiva/repository/plugins/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.github.tatagulov</groupId>
             <artifactId>eq-meta</artifactId>
-            <version>0.1.1</version>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
