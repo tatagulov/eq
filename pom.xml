@@ -4,7 +4,7 @@
 
     <groupId>io.github.tatagulov</groupId>
     <artifactId>eq</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <modules>
         <module>eq-meta</module>
         <module>eq-gen</module>

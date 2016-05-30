@@ -15,7 +15,12 @@ public abstract class From {
 
     String getFromSQL(AliasGenerator aliasGenerator) {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format(" %s %s %s", joinType == null ? "from" : joinType.sql, getBodySQL(aliasGenerator), alias));
+        if (alias!=null) {
+            sb.append(String.format(" %s %s %s", joinType == null ? "from" : joinType.sql, getBodySQL(aliasGenerator), alias));
+        } else {
+            sb.append(String.format(" %s %s", joinType == null ? "from" : joinType.sql, getBodySQL(aliasGenerator)));
+        }
+
         for (From childTable : childFroms) {
             sb.append(childTable.getFromSQL(aliasGenerator));
         }
