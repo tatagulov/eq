@@ -15,7 +15,7 @@ import static io.github.tatagulov.eq.metadata.sql.SQLFunction.*;
 import static io.github.tatagulov.eq.metadata.sql.ValueExpression.value;
 import static org.junit.Assert.assertEquals;
 
-public class TestPostgresSelect {
+public class TestBaseSelect {
 
     public static final Integer TEST_INT_VALUE = 1;
     public static final String TEST_STRING_VALUE = "testValue";
@@ -25,7 +25,9 @@ public class TestPostgresSelect {
 
     public static final Long TEST_LONG_VALUE = (long) 1;
 
-
+    private BaseSelect createSelect() {
+        return new BaseSelect();
+    }
 
     @Test
     public void testSelectFormDual() throws Exception {
@@ -33,14 +35,14 @@ public class TestPostgresSelect {
         select.select(value(1));
 
         String sql = select.getSQL();
-
         Object[] values = select.getValues();
         assertEquals(sql, "values(1)");
         assertEquals(values.length, 0);
-    }
 
-    private PostgresSelect createSelect() {
-        return new PostgresSelect();
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -52,7 +54,14 @@ public class TestPostgresSelect {
         select.select(person.person_type_id);
 
         String sql = select.getSQL();
+        Object[] values = select.getValues();
         assertEquals(sql, "select t0.person_id,t0.person_type_id from public.person t0");
+        assertEquals(values.length, 0);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -66,6 +75,11 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_id,t1.person_type_name from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -78,18 +92,35 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_id,t1.person_type_name from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
     public void testJoinOptimize() {
         Person person = new Person();
-        person.person_type_id.innerPersonType();
+        PersonType personType = person.person_type_id.innerPersonType();
 
         Select select = createSelect();
         select.select(person.person_id);
+        select.select(personType.person_type_name);
+        testJoinOptimizeAssert(select,"select t0.person_id,t1.person_type_name from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
 
+        select.select(personType.person_type_id);
+        testJoinOptimizeAssert(select,"select t0.person_id,t1.person_type_name,t1.person_type_id from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+        assertEquals(countValues.length, 0);
+    }
+
+    private void testJoinOptimizeAssert(Select select,String assertSql) {
         String sql = select.getSQL();
-        assertEquals(sql, "select t0.person_id from public.person t0");
+        assertEquals(sql, assertSql);
     }
 
     @Test
@@ -105,6 +136,12 @@ public class TestPostgresSelect {
         assertEquals(sql, "select t0.last_name from public.person t0 where t0.person_id = ?");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_INT_VALUE);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 where t0.person_id = ?");
+        assertEquals(countValues.length, 1);
+        assertEquals(countValues[0], TEST_INT_VALUE);
     }
 
     @Test
@@ -121,6 +158,14 @@ public class TestPostgresSelect {
         assertEquals(sql, "select t0.person_id from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id and t1.person_type_name = ?");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_STRING_VALUE);
+
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id and t1.person_type_name = ?");
+        assertEquals(countValues.length, 1);
+        assertEquals(countValues[0], TEST_STRING_VALUE);
+
     }
 
     @Test
@@ -146,6 +191,18 @@ public class TestPostgresSelect {
         assertEquals(values[2], TEST_SHORT_VALUE);
         assertEquals(values[3], TEST_SHORT_VALUE2);
         assertEquals(values[4], TEST_INT_VALUE);
+
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id and (t1.person_type_name = ? or t1.person_type_name = ?) and (t1.person_type_id = ? or t1.person_type_id = ?) where t0.person_id = ?");
+        assertEquals(countValues.length, 5);
+        assertEquals(countValues[0], TEST_STRING_VALUE);
+        assertEquals(countValues[1], TEST_STRING_VALUE2);
+        assertEquals(countValues[2], TEST_SHORT_VALUE);
+        assertEquals(countValues[3], TEST_SHORT_VALUE2);
+        assertEquals(countValues[4], TEST_INT_VALUE);
+
     }
 
     @Test
@@ -156,20 +213,31 @@ public class TestPostgresSelect {
         select.select(personMove.to_dep_id.innerDep().dep_name.as("to_dep"));
 
         String sql = select.getSQL();
+        Object[] values = select.getValues();
         assertEquals(sql, "select t1.dep_name as from_dep,t2.dep_name as to_dep from public.person_move t0 inner join public.dep t1 on t0.from_dep_id = t1.dep_id inner join public.dep t2 on t0.to_dep_id = t2.dep_id");
+        assertEquals(values.length, 0);
+
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person_move t0 inner join public.dep t1 on t0.from_dep_id = t1.dep_id inner join public.dep t2 on t0.to_dep_id = t2.dep_id");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
     public void testAggregate() throws Exception {
-
         PersonType personType = new PersonType();
-
 
         Select select = createSelect();
         select.select(count(personType.person_type_id).as("cnt"));
 
         String sql = select.getSQL();
         assertEquals(sql, "select count(t0.person_type_id) as cnt from public.person_type t0");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from (select count(t0.person_type_id) as cnt from public.person_type t0)");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -182,6 +250,11 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_type_id,count(t0.person_id) as cnt from public.person t0 group by t0.person_type_id");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id,count(t0.person_id) as cnt from public.person t0 group by t0.person_type_id)");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -195,6 +268,11 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select concat(t0.person_type_name,'(',count(t1.person_id),')') as text,t0.person_type_id from public.person_type t0 inner join public.person t1 on t0.person_type_id = t1.person_type_id group by t0.person_type_name,t0.person_type_id");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from (select concat(t0.person_type_name,'(',count(t1.person_id),')') as text,t0.person_type_id from public.person_type t0 inner join public.person t1 on t0.person_type_id = t1.person_type_id group by t0.person_type_name,t0.person_type_id)");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -210,6 +288,11 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_id,t0.first_name from public.person t0 limit 10 offset 20");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -225,6 +308,11 @@ public class TestPostgresSelect {
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_id,t0.first_name from public.person t0 order by t0.person_id asc,t0.first_name asc");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -243,6 +331,13 @@ public class TestPostgresSelect {
         assertEquals(sql, "select t1.person_move_id from public.person t0 inner join public.person_move t1 on t0.person_id = t1.person_id where t0.person_id = ?");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_INT_VALUE);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_move t1 on t0.person_id = t1.person_id where t0.person_id = ?");
+        assertEquals(countValues.length, 1);
+        assertEquals(countValues[0], TEST_INT_VALUE);
+
     }
 
     @Test
@@ -256,6 +351,11 @@ public class TestPostgresSelect {
         assertEquals(sql, "select case when t0.first_name = ? then 1 else 0 end as test from public.person t0");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_STRING_VALUE);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -275,13 +375,20 @@ public class TestPostgresSelect {
         assertEquals(sql, "select t0.person_type_id from public.person t0 group by t0.person_type_id having count(t0.person_id) = ? and max(t0.person_id) = 1 and max(t0.person_id) = count(t0.person_id)");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_LONG_VALUE);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id from public.person t0 group by t0.person_type_id having count(t0.person_id) = ? and max(t0.person_id) = 1 and max(t0.person_id) = count(t0.person_id))");
+        assertEquals(countValues.length, 1);
+        assertEquals(countValues[0], TEST_LONG_VALUE);
+
     }
 
     @Test
     public void testSubSelect() throws Exception {
         final PersonMove personMove = new PersonMove();
 
-        PostgresSelect subSelect = createSelect();
+        BaseSelect subSelect = createSelect();
 
         AliasColumn<? extends Select, Integer> personId = subSelect.select(personMove.person_id);
         AliasColumn<? extends Select, Long> personCnt = subSelect.select(count(personMove.person_id).as("cnt"));
@@ -299,6 +406,11 @@ public class TestPostgresSelect {
 
         assertEquals(sql, "select t0.first_name,t0.last_name,t1.cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 group by t2.person_id) t1 on t0.person_id = t1.person_id");
         assertEquals(values.length, 0);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 group by t2.person_id) t1 on t0.person_id = t1.person_id");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -324,6 +436,11 @@ public class TestPostgresSelect {
 
         assertEquals(sql, "select t0.first_name,t0.last_name,t1.cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 group by t2.person_id) t1 on t0.person_id = t1.person_id");
         assertEquals(values.length, 0);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 group by t2.person_id) t1 on t0.person_id = t1.person_id");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -332,7 +449,7 @@ public class TestPostgresSelect {
         personMove.where(personMove.from_dep_id.eq(param(TEST_SHORT_VALUE)));
         personMove.where(personMove.to_dep_id.eq(param(TEST_SHORT_VALUE2)));
 
-        PostgresSelect subSelect = createSelect();
+        BaseSelect subSelect = createSelect();
         subSelect.select(personMove.person_id);
 
         Person person = new Person();
@@ -351,6 +468,14 @@ public class TestPostgresSelect {
         assertEquals(values[0], TEST_STRING_VALUE);
         assertEquals(values[1], TEST_SHORT_VALUE);
         assertEquals(values[2], TEST_SHORT_VALUE2);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 where t0.first_name = ? and t0.person_id in (select t1.person_id from public.person_move t1 where t1.from_dep_id = ? and t1.to_dep_id = ?)");
+        assertEquals(values.length, 3);
+        assertEquals(countValues[0], TEST_STRING_VALUE);
+        assertEquals(countValues[1], TEST_SHORT_VALUE);
+        assertEquals(countValues[2], TEST_SHORT_VALUE2);
     }
 
     @Test
@@ -372,6 +497,11 @@ public class TestPostgresSelect {
 
         assertEquals(sql, "select t0.person_id,(select max(t1.move_date) from public.person_move t1 where t1.person_id = t0.person_id) as max_move_date from public.person t0");
         assertEquals(values.length, 0);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
     }
 
     @Test
@@ -386,7 +516,7 @@ public class TestPostgresSelect {
         Person person2 = new Person();
         person2.where(person2.person_type_id.eq(param(TEST_SHORT_VALUE2)));
 
-        PostgresSelect select2 = createSelect();
+        BaseSelect select2 = createSelect();
         select2.select(person2.first_name);
         select2.select(person2.last_name);
 
@@ -399,6 +529,13 @@ public class TestPostgresSelect {
         assertEquals(values.length, 2);
         assertEquals(values[0], TEST_SHORT_VALUE);
         assertEquals(values[1], TEST_SHORT_VALUE2);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select sum(cnt) from (select count(*) as cnt from public.person t0 where t0.person_type_id = ? union all select count(*) as cnt from public.person t1 where t1.person_type_id = ?) as foo");
+        assertEquals(countValues.length, 2);
+        assertEquals(countValues[0], TEST_SHORT_VALUE);
+        assertEquals(countValues[1], TEST_SHORT_VALUE2);
     }
 
     @Test
@@ -413,7 +550,7 @@ public class TestPostgresSelect {
         Person person2 = new Person();
         person2.where(person2.person_type_id.eq(param(TEST_SHORT_VALUE2)));
 
-        Select baseSelect2 = createSelect();
+        BaseSelect baseSelect2 = createSelect();
         baseSelect2.select(person2.person_id);
 
         baseSelect1.unionAll(baseSelect2);
@@ -424,6 +561,19 @@ public class TestPostgresSelect {
         Select select = createSelect();
         select.select(personMove.person_id);
         select.select(personMove.from_dep_id);
+
+        testUnionInSubSelectAssert(select);
+        testUnionInSubSelectAssert(select);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person_move t0 where t0.person_id in (select t1.person_id from public.person t1 where t1.person_type_id = ? union all select t2.person_id from public.person t2 where t2.person_type_id = ?)");
+        assertEquals(countValues.length, 2);
+        assertEquals(countValues[0], TEST_SHORT_VALUE);
+        assertEquals(countValues[1], TEST_SHORT_VALUE2);
+    }
+
+    private void testUnionInSubSelectAssert(Select select) {
         String sql = select.getSQL();
         Object[] values = select.getValues();
 
@@ -433,44 +583,9 @@ public class TestPostgresSelect {
         assertEquals(values[1], TEST_SHORT_VALUE2);
     }
 
-    @Test
-    public void testSQL() throws Exception {
-
-        boolean filterCurrentData = true;
-        boolean showCountMove = true;
-        boolean showPersonType = true;
-        Short fromDepId = 123;
-        Integer personId = 456;
-
-        Person person = new Person();
-        PersonMove innerPersonMove = person.person_id.innerPersonMove(); // здесь идет inner Join нужно для where
-        PersonMove leftPersonMove = person.person_id.leftPersonMove();// здесь идет left Join нужно для select
-
-        // Для фильтра использует inner join
-        if (filterCurrentData) innerPersonMove.where(innerPersonMove.move_date.eq(param(new Date(System.currentTimeMillis()))));
-        if (fromDepId!=null) innerPersonMove.where(innerPersonMove.from_dep_id.eq(param(fromDepId)));
-
-        if (personId!=null) person.where(person.person_id.eq(param(personId)));
-
-        Select select = new PostgresSelect();
-        select.select(person.first_name);
-        select.select(person.last_name);
-        // здесь идет inline join
-        if (showPersonType) select.select(person.person_type_id.innerPersonType().person_type_name);
-
-        // при чем можем соединять несколько раз, в итоге все равно будет только один Join
-        if (showPersonType) select.select(person.person_type_id.innerPersonType().person_type_id);
-
-        // считаем count, секция group by автоматически заполнится
-        if (showCountMove) select.select(count(leftPersonMove.person_move_id).as("person_move_cnt"));
-
-        System.out.println(select.getSQL());
-    }
 
     @Test
     public void testOrderByJoin() throws Exception {
-
-
         Person person = new Person();
 
         Select select = new PostgresSelect();
@@ -478,6 +593,17 @@ public class TestPostgresSelect {
 
         select.orderBy(person.person_type_id.innerPersonType().person_type_name);
 
-        System.out.println(select.getSQL());
+        String sql = select.getSQL();
+        Object[] values = select.getValues();
+
+        assertEquals(sql,"select t0.last_name from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id order by t1.person_type_name asc");
+        assertEquals(values.length, 0);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id");
+        assertEquals(countValues.length, 0);
     }
+
+
 }

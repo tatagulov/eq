@@ -5,18 +5,16 @@ import io.github.tatagulov.eq.metadata.sql.api.Insert;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PostgresInsert<K extends SQLTable<K>> extends PostgresSelect implements Insert<K> {
-
+public class MySQLInsert<K extends SQLTable<K>> extends MySQLSelect implements Insert<K> {
     protected final K table;
     protected final List<SQLColumn> sqlColumns = new LinkedList<SQLColumn>();
-    protected boolean useSubSelect;
 
-    public PostgresInsert(K table) {
+    public MySQLInsert(K table) {
         super(false);
         this.table = table;
     }
 
-    public PostgresInsert(boolean distinct, K table) {
+    public MySQLInsert(boolean distinct, K table) {
         super(distinct);
         this.table = table;
     }
@@ -28,8 +26,7 @@ public class PostgresInsert<K extends SQLTable<K>> extends PostgresSelect implem
             if (fields.length()>0) fields.append(",");
             fields.append(SQLColumn.column.columnName);
         }
-        AliasGenerator aliasGenerator = new AliasGenerator("t");
-        return String.format("insert into %s(%s) %s",table.table.getFullTableName(),fields,super.getSQL(aliasGenerator));
+        return String.format("insert into %s(%s) %s",table.table.getFullTableName(),fields,super.getSQL());
     }
 
     @Override

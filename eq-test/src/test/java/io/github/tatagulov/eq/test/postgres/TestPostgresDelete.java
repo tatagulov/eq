@@ -1,4 +1,4 @@
-package io.github.tatagulov.eq.test;
+package io.github.tatagulov.eq.test.postgres;
 
 import io.github.tatagulov.eq.metadata.sql.PostgresDelete;
 import io.github.tatagulov.eq.metadata.sql.PostgresSelect;

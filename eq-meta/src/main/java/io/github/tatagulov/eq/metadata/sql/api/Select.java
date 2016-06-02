@@ -1,9 +1,6 @@
 package io.github.tatagulov.eq.metadata.sql.api;
 
 import io.github.tatagulov.eq.metadata.sql.*;
-import io.github.tatagulov.eq.metadata.sql.ParamExpression;
-
-import java.util.List;
 
 public interface Select {
 
@@ -15,6 +12,10 @@ public interface Select {
 
     Object[] getValues();
 
+    String getCountSQL();
+
+    Object[] getCountValues();
+
     void having(Condition condition);
 
     void orderBy(Expression expression, OrderType orderType);
@@ -25,15 +26,11 @@ public interface Select {
 
     void offset(Long offset);
 
-    void union(Select select);
+    void union(BaseSelect select);
 
-    void unionAll(Select select);
+    void unionAll(BaseSelect select);
 
     Expression asExpression();
 
     Expression asAliasExpression(String alias);
-
-    String getSQL(AliasGenerator aliasGenerator);
-
-    List<ParamExpression> getParamExpressions();
 }

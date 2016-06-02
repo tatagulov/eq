@@ -2,7 +2,7 @@ package io.github.tatagulov.eq.metadata.sql;
 
 public class OrderExpression {
 
-    public final Expression expression;
+    public final Expression<?> expression;
     public final OrderType orderType;
 
     public OrderExpression(Expression expression, OrderType orderType) {

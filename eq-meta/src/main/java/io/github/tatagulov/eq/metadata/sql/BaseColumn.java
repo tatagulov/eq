@@ -67,7 +67,7 @@ public abstract class BaseColumn<V extends From,T> implements AliasExpression<T>
         return new IsNotNullCondition(this);
     }
 
-    public Condition in(Expression ... expressions) {
+    public Condition in(Expression<T> ... expressions) {
         return new InCondition(this,expressions);
     }
     public Condition notIn(Expression ... expressions) {
