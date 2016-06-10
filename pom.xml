@@ -17,13 +17,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>kgd</id>
-            <url>http://${archiva.server}/archiva/repository/kgd/</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>

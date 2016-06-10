@@ -5,7 +5,8 @@ public enum Criteria {
     GT(">"),
     GT_EQ(">="),
     LS("<"),
-    LS_EQ("<=");
+    LS_EQ("<="),
+    LIKE(" like ");
 
     public final String sql;
 
