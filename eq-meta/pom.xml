@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.tatagulov</groupId>
     <artifactId>eq-meta</artifactId>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
 
     <distributionManagement>
         <repository>
@@ -39,4 +39,14 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

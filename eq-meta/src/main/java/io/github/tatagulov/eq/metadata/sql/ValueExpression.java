@@ -27,6 +27,7 @@ public class ValueExpression<T> implements Expression<T> {
 
     @Override
     public String getSQL(AliasGenerator aliasGenerator) {
+        if (value==null) return "null";
         if (value instanceof String) return "'"+value.toString()+"'";
         if (value instanceof Date) return "'" +dateFormatter.print(((Date)value).getTime()) + "'";
         if (value instanceof Time) return "'" +timeFormatter.print(((Time)value).getTime()) + "'";
