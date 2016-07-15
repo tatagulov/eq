@@ -42,7 +42,7 @@ public class TestPostgresDelete {
 
         String sql = delete.getSQL();
         Object[] values = delete.getValues();
-        assertEquals(sql, "delete from public.person t0 where t0.person_id in (select t1.person_id from public.person_move t1 where t1.to_dep_id = ?)");
+        assertEquals(sql, "delete from public.person t0 where t0.person_id in ((select t1.person_id from public.person_move t1 where t1.to_dep_id = ?))");
         assertEquals(values.length, 1);
         assertEquals(values[0], TEST_SHORT_VALUE);
     }

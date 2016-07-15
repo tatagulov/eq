@@ -20,6 +20,6 @@ public class InCondition extends Condition {
             if (stringBuilder.length()>0) stringBuilder.append(",");
             stringBuilder.append(expression.getSQL(aliasGenerator));
         }
-        return expression.getSQL(aliasGenerator) + " in " + stringBuilder.toString();
+        return expression.getSQL(aliasGenerator) + " in (" + stringBuilder.toString() + ")";
     }
 }

@@ -4,12 +4,11 @@
 
     <groupId>io.github.tatagulov</groupId>
     <artifactId>eq</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.3</version>
     <modules>
         <module>eq-meta</module>
         <module>eq-gen</module>
         <module>eq-test</module>
-        <module>eq-test-mysql</module>
     </modules>
     <packaging>pom</packaging>
 

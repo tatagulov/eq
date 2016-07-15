@@ -59,11 +59,11 @@ public abstract class BaseColumn<V extends From,T> implements AliasExpression<T>
         return new TwoCondition<T>(this,Criteria.LS,expression);
     }
 
-    public Condition isNull(Expression<T> expression) {
+    public Condition isNull() {
         return new IsNullCondition(this);
     }
 
-    public Condition isNotNull(Expression<T> expression) {
+    public Condition isNotNull() {
         return new IsNotNullCondition(this);
     }
 

@@ -100,6 +100,24 @@ public class TestBaseSelect {
     }
 
     @Test
+    public void testLeftJoinWithWhere() throws Exception {
+        Person person = new Person();
+        PersonType personType = person.person_type_id.innerPersonType();
+        person.where(personType.person_type_id.isNull());
+
+        Select select = createSelect();
+        select.select(person.person_id);
+
+        String sql = select.getSQL();
+        assertEquals(sql, "select t0.person_id from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id where t1.person_type_id is null");
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_type t1 on t0.person_type_id = t1.person_type_id where t1.person_type_id is null");
+        assertEquals(countValues.length, 0);
+    }
+
+    @Test
     public void testJoinOptimize() {
         Person person = new Person();
         PersonType personType = person.person_type_id.innerPersonType();
@@ -463,7 +481,7 @@ public class TestBaseSelect {
         String sql = select.getSQL();
         Object[] values = select.getValues();
 
-        assertEquals(sql, "select t0.person_id,t0.last_name from public.person t0 where t0.first_name = ? and t0.person_id in (select t1.person_id from public.person_move t1 where t1.from_dep_id = ? and t1.to_dep_id = ?)");
+        assertEquals(sql, "select t0.person_id,t0.last_name from public.person t0 where t0.first_name = ? and t0.person_id in ((select t1.person_id from public.person_move t1 where t1.from_dep_id = ? and t1.to_dep_id = ?))");
         assertEquals(values.length, 3);
         assertEquals(values[0], TEST_STRING_VALUE);
         assertEquals(values[1], TEST_SHORT_VALUE);
@@ -471,7 +489,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from public.person t0 where t0.first_name = ? and t0.person_id in (select t1.person_id from public.person_move t1 where t1.from_dep_id = ? and t1.to_dep_id = ?)");
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 where t0.first_name = ? and t0.person_id in ((select t1.person_id from public.person_move t1 where t1.from_dep_id = ? and t1.to_dep_id = ?))");
         assertEquals(values.length, 3);
         assertEquals(countValues[0], TEST_STRING_VALUE);
         assertEquals(countValues[1], TEST_SHORT_VALUE);
@@ -503,6 +521,8 @@ public class TestBaseSelect {
         assertEquals(countSQL, "select count(*) as cnt from public.person t0");
         assertEquals(countValues.length, 0);
     }
+
+
 
     @Test
     public void testUnion() {
@@ -567,7 +587,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from public.person_move t0 where t0.person_id in (select t1.person_id from public.person t1 where t1.person_type_id = ? union all select t2.person_id from public.person t2 where t2.person_type_id = ?)");
+        assertEquals(countSQL, "select count(*) as cnt from public.person_move t0 where t0.person_id in ((select t1.person_id from public.person t1 where t1.person_type_id = ? union all select t2.person_id from public.person t2 where t2.person_type_id = ?))");
         assertEquals(countValues.length, 2);
         assertEquals(countValues[0], TEST_SHORT_VALUE);
         assertEquals(countValues[1], TEST_SHORT_VALUE2);
@@ -577,7 +597,7 @@ public class TestBaseSelect {
         String sql = select.getSQL();
         Object[] values = select.getValues();
 
-        assertEquals(sql, "select t0.person_id,t0.from_dep_id from public.person_move t0 where t0.person_id in (select t1.person_id from public.person t1 where t1.person_type_id = ? union all select t2.person_id from public.person t2 where t2.person_type_id = ?)");
+        assertEquals(sql, "select t0.person_id,t0.from_dep_id from public.person_move t0 where t0.person_id in ((select t1.person_id from public.person t1 where t1.person_type_id = ? union all select t2.person_id from public.person t2 where t2.person_type_id = ?))");
         assertEquals(values.length, 2);
         assertEquals(values[0], TEST_SHORT_VALUE);
         assertEquals(values[1], TEST_SHORT_VALUE2);

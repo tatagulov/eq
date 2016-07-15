@@ -60,7 +60,13 @@ public abstract class From {
 
 
     public Condition where(Condition newCondition) {
-        if (parent != null) parent.childFroms.add(this);
+        for (Expression<?> expression : newCondition.expressions) {
+            List<From> list = expression.getFrom();
+            if (list.size()>0){
+                list.get(0).getRootFrom();
+            }
+        }
+
         if (condition == null) {
             newCondition.conditionType = joinType == null ? ConditionType.where : ConditionType.on;
             condition = newCondition;
