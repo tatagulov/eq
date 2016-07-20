@@ -377,6 +377,25 @@ public class TestBaseSelect {
     }
 
     @Test
+    public void testCaseManyWhen() throws Exception {
+        Person person = new Person();
+        Select select = createSelect();
+        select.select(when(person.first_name.eq(param(TEST_STRING_VALUE)), value(1)).when(person.first_name.eq(param(TEST_STRING_VALUE2)), value(2)).otherwise(value(0)).as("test"));
+
+        String sql = select.getSQL();
+        Object[] values = select.getValues();
+        assertEquals(sql, "select case when t0.first_name = ? then 1 when t0.first_name = ? then 2 else 0 end as test from public.person t0");
+        assertEquals(values.length, 2);
+        assertEquals(values[0], TEST_STRING_VALUE);
+        assertEquals(values[1], TEST_STRING_VALUE2);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0");
+        assertEquals(countValues.length, 0);
+    }
+
+    @Test
     public void testHaving() throws Exception {
 
         Person person = new Person();

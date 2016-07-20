@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.tatagulov</groupId>
     <artifactId>eq-meta</artifactId>
-    <version>0.6.3</version>
+    <version>0.6.5</version>
 
     <distributionManagement>
         <repository>

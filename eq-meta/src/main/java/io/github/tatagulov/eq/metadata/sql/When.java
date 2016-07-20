@@ -3,7 +3,7 @@ package io.github.tatagulov.eq.metadata.sql;
 public class When<T> extends Otherwise<T> {
 
 
-    public When when(Condition condition,Expression<T> expression){
+    public When<T> when(Condition condition,Expression<T> expression){
         condition.conditionType = ConditionType.when;
 
         WhenCondition whenCondition = new WhenCondition();

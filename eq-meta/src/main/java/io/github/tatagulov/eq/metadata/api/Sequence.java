@@ -11,6 +11,6 @@ public class Sequence {
     }
 
     public String getFullName() {
-        return (schema.schemaName==null ? "" : schema.schemaName+ ".") + "." + sequenceName;
+        return (schema.schemaName==null ? "" : schema.schemaName+ ".") + sequenceName;
     }
 }

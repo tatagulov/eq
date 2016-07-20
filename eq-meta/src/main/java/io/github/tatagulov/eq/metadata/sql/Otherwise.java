@@ -17,10 +17,10 @@ public class Otherwise<T> implements Expression<T> {
     public String getSQL(AliasGenerator aliasGenerator) {
         StringBuilder stringBuilder = new StringBuilder("case");
         for (WhenCondition whenCondition : whenConditions) {
-            String when = String.format("%s then %s ", whenCondition.condition.getSQL(aliasGenerator), whenCondition.expression.getSQL(aliasGenerator));
+            String when = String.format("%s then %s", whenCondition.condition.getSQL(aliasGenerator), whenCondition.expression.getSQL(aliasGenerator));
             stringBuilder.append(when);
         }
-        String otherwise = String.format("else %s end", otherwiseExpression.getSQL(aliasGenerator));
+        String otherwise = String.format(" else %s end", otherwiseExpression.getSQL(aliasGenerator));
         stringBuilder.append(otherwise);
         return stringBuilder.toString();
     }
