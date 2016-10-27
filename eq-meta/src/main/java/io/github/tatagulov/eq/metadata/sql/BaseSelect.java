@@ -264,6 +264,10 @@ public class BaseSelect extends From implements Select {
         return paramExpressions;
     }
 
+    public List<Expression> getSelectExpressions() {
+        return selectExpressions;
+    }
+
     protected List<ParamExpression> getCountParamExpressions() {
         List<ParamExpression> paramExpressions = new LinkedList<ParamExpression>();
         if (from != null) paramExpressions.addAll(from.getParamExpressions());

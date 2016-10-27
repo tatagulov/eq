@@ -2,6 +2,8 @@ package io.github.tatagulov.eq.metadata.sql.api;
 
 import io.github.tatagulov.eq.metadata.sql.*;
 
+import java.util.List;
+
 public interface Select {
 
     String getSQL();
@@ -33,4 +35,6 @@ public interface Select {
     Expression asExpression();
 
     Expression asAliasExpression(String alias);
+
+    List<Expression> getSelectExpressions();
 }

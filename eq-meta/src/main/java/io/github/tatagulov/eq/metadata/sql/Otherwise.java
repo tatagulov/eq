@@ -20,7 +20,8 @@ public class Otherwise<T> implements Expression<T> {
             String when = String.format("%s then %s", whenCondition.condition.getSQL(aliasGenerator), whenCondition.expression.getSQL(aliasGenerator));
             stringBuilder.append(when);
         }
-        String otherwise = String.format(" else %s end", otherwiseExpression.getSQL(aliasGenerator));
+
+        String otherwise = otherwiseExpression!=null ? String.format(" else %s end", otherwiseExpression.getSQL(aliasGenerator)): " end";
         stringBuilder.append(otherwise);
         return stringBuilder.toString();
     }
@@ -37,7 +38,7 @@ public class Otherwise<T> implements Expression<T> {
             froms.addAll(whenCondition.condition.getFrom());
             froms.addAll(whenCondition.expression.getFrom());
         }
-        froms.addAll(otherwiseExpression.getFrom());
+        if (otherwiseExpression!=null) froms.addAll(otherwiseExpression.getFrom());
         return froms;
     }
 
@@ -45,10 +46,10 @@ public class Otherwise<T> implements Expression<T> {
     public List<ParamExpression> getParamExpressions() {
         List<ParamExpression> paramExpressions = new LinkedList<ParamExpression>();
         for (WhenCondition whenCondition : whenConditions) {
-            paramExpressions.addAll(whenCondition.expression.getParamExpressions());
             paramExpressions.addAll(whenCondition.condition.getParamExpressions());
+            paramExpressions.addAll(whenCondition.expression.getParamExpressions());
         }
-        paramExpressions.addAll(otherwiseExpression.getParamExpressions());
+        if (otherwiseExpression!=null) paramExpressions.addAll(otherwiseExpression.getParamExpressions());
         return paramExpressions;
     }
 
@@ -58,7 +59,7 @@ public class Otherwise<T> implements Expression<T> {
             if (whenCondition.expression.isAggregate()) return true;
             if (whenCondition.condition.isAggregate()) return true;
         }
-        return otherwiseExpression.isAggregate();
+        return otherwiseExpression != null && otherwiseExpression.isAggregate();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class Otherwise<T> implements Expression<T> {
             expressions.addAll(whenCondition.expression.getGroupByExpressions());
             expressions.addAll(whenCondition.condition.getGroupByExpressions());
         }
-        expressions.addAll(otherwiseExpression.getGroupByExpressions());
+        if (otherwiseExpression!=null) expressions.addAll(otherwiseExpression.getGroupByExpressions());
         return expressions;
     }
 
