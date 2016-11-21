@@ -224,7 +224,7 @@ public class BaseSelect extends From implements Select {
 
         StringBuilder sql;
         if (isAggregateSelectColumn || havingCondition!=null) {
-            sql = new StringBuilder(String.format("select count(*) as cnt from (%s)",selectSQL + fromSQL + groupBySQL + havingSQL));
+            sql = new StringBuilder(String.format("select count(*) as cnt from (%s) as foo",selectSQL + fromSQL + groupBySQL + havingSQL));
         } else {
             sql = new StringBuilder("select count(*) as cnt" + fromSQL + groupBySQL + havingSQL );
         }
@@ -270,6 +270,11 @@ public class BaseSelect extends From implements Select {
 
     protected List<ParamExpression> getCountParamExpressions() {
         List<ParamExpression> paramExpressions = new LinkedList<ParamExpression>();
+        if (isAggregateSelectColumn || havingCondition!=null) {
+            for (Expression<?> expression : selectExpressions) {
+                paramExpressions.addAll(expression.getParamExpressions());
+            }
+        }
         if (from != null) paramExpressions.addAll(from.getParamExpressions());
         if (havingCondition != null) paramExpressions.addAll(havingCondition.getParamExpressions());
         for (BaseSelect baseSelect : unions) {

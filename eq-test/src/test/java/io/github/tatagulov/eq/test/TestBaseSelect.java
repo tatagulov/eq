@@ -2,13 +2,10 @@ package io.github.tatagulov.eq.test;
 
 import io.github.tatagulov.eq.metadata.sql.*;
 import io.github.tatagulov.eq.metadata.sql.api.Select;
-import io.github.tatagulov.eq.metadata.sql.TwoCondition;
 import io.github.tatagulov.test.testData.entity.db.public_.Person;
 import io.github.tatagulov.test.testData.entity.db.public_.PersonMove;
 import io.github.tatagulov.test.testData.entity.db.public_.PersonType;
 import org.junit.Test;
-
-import java.sql.Date;
 
 import static io.github.tatagulov.eq.metadata.sql.ParamExpression.param;
 import static io.github.tatagulov.eq.metadata.sql.SQLFunction.*;
@@ -255,7 +252,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from (select count(t0.person_type_id) as cnt from public.person_type t0)");
+        assertEquals(countSQL, "select count(*) as cnt from (select count(t0.person_type_id) as cnt from public.person_type t0) as foo");
         assertEquals(countValues.length, 0);
     }
 
@@ -272,7 +269,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id,count(t0.person_id) as cnt from public.person t0 group by t0.person_type_id)");
+        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id,count(t0.person_id) as cnt from public.person t0 group by t0.person_type_id) as foo");
         assertEquals(countValues.length, 0);
     }
 
@@ -290,7 +287,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from (select concat(t0.person_type_name,'(',count(t1.person_id),')') as text,t0.person_type_id from public.person_type t0 inner join public.person t1 on t0.person_type_id = t1.person_type_id group by t0.person_type_name,t0.person_type_id)");
+        assertEquals(countSQL, "select count(*) as cnt from (select concat(t0.person_type_name,'(',count(t1.person_id),')') as text,t0.person_type_id from public.person_type t0 inner join public.person t1 on t0.person_type_id = t1.person_type_id group by t0.person_type_name,t0.person_type_id) as foo");
         assertEquals(countValues.length, 0);
     }
 
@@ -456,7 +453,7 @@ public class TestBaseSelect {
 
         String countSQL = select.getCountSQL();
         Object[] countValues = select.getCountValues();
-        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id from public.person t0 group by t0.person_type_id having count(t0.person_id) = ? and max(t0.person_id) = 1 and max(t0.person_id) = count(t0.person_id))");
+        assertEquals(countSQL, "select count(*) as cnt from (select t0.person_type_id from public.person t0 group by t0.person_type_id having count(t0.person_id) = ? and max(t0.person_id) = 1 and max(t0.person_id) = count(t0.person_id)) as foo");
         assertEquals(countValues.length, 1);
         assertEquals(countValues[0], TEST_LONG_VALUE);
 
