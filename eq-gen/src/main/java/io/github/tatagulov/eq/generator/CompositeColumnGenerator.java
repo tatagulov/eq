@@ -21,7 +21,7 @@ public class CompositeColumnGenerator extends Template {
 
         String selectCompositeColumnClassName = getClassName(SelectCompositeColumn.class);
         String selectColumnClassName = getClassName(SQLColumn.class);
-        columnClassName = Utils.toCamelCase(compositeColumn.getName())+"Column";
+        columnClassName = Utils.toCamelCase(compositeColumn.getName())+"EQColumn";
         getClassName(Column.class);
         add("\tpublic class %s extends %s<%s,String> {\n", columnClassName, selectCompositeColumnClassName,tableClassName);
         add("\t\tpublic %s(%s table, %s ... columns) {\n", columnClassName,tableClassName,selectColumnClassName);
@@ -53,7 +53,7 @@ public class CompositeColumnGenerator extends Template {
         String methodName = joinType.name() + linkTableClassName;
         if (isMany) methodName += "By" + Utils.toCamelCase(compositeColumn.getName());
 
-        String tableVarName = methodName + "Table";
+        String tableVarName = methodName + "EQTable";
 
         add("\t\tprivate %s %s;\n", linkTableClassName, tableVarName);
         add("\t\tpublic %s %s(){\n",linkTableClassName,methodName);

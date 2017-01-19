@@ -28,9 +28,9 @@ public class ColumnGenerator extends Template {
         generated = column.parentColumn!=null || column.childColumns.size()>0;
 
         if (generated) {
-            columnClassName = Utils.toCamelCase(column.columnName)+"Column";
+            columnClassName = Utils.toCamelCase(column.columnName)+"EQColumn";
             add("\tpublic class %s extends %s<%s,%s> {\n", columnClassName, columnExtendClassName,tableClassName, typeClassName);
-            add("\t\tpublic %s(%s table, Column<%s, ?> column) { super(table, column); }\n", columnClassName,tableClassName, typeClassName);
+            add("\t\tpublic %s(%s table, EQColumn<%s, ?> column) { super(table, column); }\n", columnClassName,tableClassName, typeClassName);
 
             if (column.parentColumn!=null) {
                 getLink(column.parentColumn, JoinType.inner, false);
@@ -61,7 +61,7 @@ public class ColumnGenerator extends Template {
         String methodName = joinType.name() + linkTableClassName;
         if (isMany) methodName += "By" + Utils.toCamelCase(column.columnName);
 
-        String tableVarName = methodName + "Table";
+        String tableVarName = methodName + "EQTable";
 
         add("\t\tprivate %s %s;\n",linkTableClassName,tableVarName);
         add("\t\tpublic %s %s(){\n",linkTableClassName,methodName);
