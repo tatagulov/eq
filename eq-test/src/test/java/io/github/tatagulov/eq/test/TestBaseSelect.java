@@ -14,14 +14,14 @@ import static org.junit.Assert.assertEquals;
 
 public class TestBaseSelect {
 
-    public static final Integer TEST_INT_VALUE = 1;
-    public static final Integer TEST_INT_VALUE2 = 2;
-    public static final String TEST_STRING_VALUE = "testValue";
-    public static final String TEST_STRING_VALUE2 = "testValue2";
-    public static final Short TEST_SHORT_VALUE = 1;
-    public static final Short TEST_SHORT_VALUE2 = 2;
+    private static final Integer TEST_INT_VALUE = 1;
+    private static final Integer TEST_INT_VALUE2 = 2;
+    private static final String TEST_STRING_VALUE = "testValue";
+    private static final String TEST_STRING_VALUE2 = "testValue2";
+    private static final Short TEST_SHORT_VALUE = 1;
+    private static final Short TEST_SHORT_VALUE2 = 2;
 
-    public static final Long TEST_LONG_VALUE = (long) 1;
+    private static final Long TEST_LONG_VALUE = (long) 1;
 
     private BaseSelect createSelect() {
         return new BaseSelect();
@@ -299,8 +299,8 @@ public class TestBaseSelect {
         select.select(person.person_id);
         select.select(person.first_name);
 
-        select.limit(10l);
-        select.offset(20l);
+        select.limit(10L);
+        select.offset(20L);
 
         String sql = select.getSQL();
         assertEquals(sql, "select t0.person_id,t0.first_name from public.person t0 limit 10 offset 20");
@@ -336,7 +336,7 @@ public class TestBaseSelect {
         Person person = new Person();
         PersonMove personMove = person.person_id.innerPersonMove();
 
-        person.where(person.person_id.eq(param(TEST_INT_VALUE)));
+        person.where(person.person_id.eq(TEST_INT_VALUE));
 
         Select select = createSelect();
         select.select(personMove.person_move_id);
@@ -353,14 +353,13 @@ public class TestBaseSelect {
         assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join public.person_move t1 on t0.person_id = t1.person_id where t0.person_id = ?");
         assertEquals(countValues.length, 1);
         assertEquals(countValues[0], TEST_INT_VALUE);
-
     }
 
     @Test
     public void testCaseWhen() throws Exception {
         Person person = new Person();
         Select select = createSelect();
-        select.select(when(person.first_name.eq(param(TEST_STRING_VALUE)), param(TEST_INT_VALUE)).otherwise(param(TEST_INT_VALUE2)).as("test"));
+        select.select(when(person.first_name.eq(TEST_STRING_VALUE), param(TEST_INT_VALUE)).otherwise(param(TEST_INT_VALUE2)).as("test"));
 
         String sql = select.getSQL();
         Object[] values = select.getValues();
@@ -397,7 +396,7 @@ public class TestBaseSelect {
     }
 
     @Test
-    public void testCaseWhenWhithoutOtherwise() throws Exception {
+    public void testCaseWhenWithOutOtherwise() throws Exception {
         Person person = new Person();
         Select select = createSelect();
         select.select(when(person.first_name.eq(param(TEST_STRING_VALUE)), value(1)).as("test"));
@@ -494,8 +493,8 @@ public class TestBaseSelect {
         final PersonMove personMove = new PersonMove();
 
         class MyView extends PostgresSelect {
-            AliasColumn<MyView,Integer> personId = new AliasColumn<MyView,Integer>(this,personMove.person_id);
-            AliasColumn<MyView,Long> personCnt = new AliasColumn<MyView,Long>(this, count(personMove.person_id).as("cnt"));
+            private AliasColumn<MyView,Integer> personId = new AliasColumn<MyView,Integer>(this,personMove.person_id);
+            private AliasColumn<MyView,Long> personCnt = new AliasColumn<MyView,Long>(this, count(personMove.person_id).as("cnt"));
         }
 
         Person person = new Person();

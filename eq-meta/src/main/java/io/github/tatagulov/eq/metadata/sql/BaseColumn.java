@@ -45,18 +45,48 @@ public abstract class BaseColumn<V extends From,T> implements AliasExpression<T>
         return new TwoCondition<T>(this,Criteria.EQ,expression);
     }
 
+    public Condition eq(T value) {
+        return eq(new ParamExpression<T>(value,getType()));
+    }
+
+    public Condition notEq(Expression<T> expression) {
+        return new TwoCondition<T>(this,Criteria.NOT_EQ,expression);
+    }
+
+    public Condition notEq(T value) {
+        return notEq(new ParamExpression<T>(value,getType()));
+    }
+
     public Condition gtEq(Expression<T> expression) {
         return new TwoCondition<T>(this,Criteria.GT_EQ,expression);
     }
+
+    public Condition gtEq(T value) {
+        return gtEq(new ParamExpression<T>(value,getType()));
+    }
+
     public Condition gt(Expression<T> expression) {
         return new TwoCondition<T>(this,Criteria.GT,expression);
+    }
+
+    public Condition gt(T value) {
+        return gt(new ParamExpression<T>(value,getType()));
     }
 
     public Condition lsEq(Expression<T> expression) {
         return new TwoCondition<T>(this,Criteria.LS_EQ,expression);
     }
+
+    public Condition lsEq(T value) {
+        return lsEq(new ParamExpression<T>(value,getType()));
+    }
+
     public Condition ls(Expression<T> expression) {
         return new TwoCondition<T>(this,Criteria.LS,expression);
+    }
+
+    public Condition ls(T value) {
+        return ls(new ParamExpression<T>(value,getType()));
     }
 
     public Condition isNull() {
@@ -70,11 +100,16 @@ public abstract class BaseColumn<V extends From,T> implements AliasExpression<T>
     public Condition in(Expression<T> ... expressions) {
         return new InCondition(this,expressions);
     }
+
     public Condition notIn(Expression ... expressions) {
         return new NotInCondition(this,expressions);
     }
 
     public Condition in(Select select) {
         return new InCondition(this, select.asExpression());
+    }
+
+    public Condition notIn(Select select) {
+        return new NotInCondition(this, select.asExpression());
     }
 }

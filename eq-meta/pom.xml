@@ -3,17 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <parent>
+        <groupId>io.github.tatagulov</groupId>
+        <artifactId>eq</artifactId>
+        <version>0.6.9</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.github.tatagulov</groupId>
     <artifactId>eq-meta</artifactId>
-    <version>0.6.9</version>
-
-    <distributionManagement>
-        <repository>
-            <id>kgd</id>
-            <url>http://${archiva.server}/archiva/repository/kgd/</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -40,13 +36,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.2</version>
-            </plugin>
-        </plugins>
-    </build>
 </project>

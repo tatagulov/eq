@@ -7,7 +7,7 @@ public abstract class Condition {
 
     protected final Expression[] expressions;
     ConditionType conditionType;
-    final List<Condition> childConditions = new LinkedList<Condition>();
+    private final List<Condition> childConditions = new LinkedList<Condition>();
 
     public Condition(Expression ... expressions) {
         this.expressions = expressions;
@@ -71,69 +71,4 @@ public abstract class Condition {
         }
         return groupByExpressions;
     }
-
-
-    //    public static <K> Condition eqParam(Expression<K> left,Expression<K> right) {
-//        BiBooleanExpression biBooleanExpression = new BiBooleanExpression(left, Criteria.EQ, right);
-//        return new Condition(biBooleanExpression);
-//    }
-//
-//    public static <K> Condition gt(Expression<K> left,Expression<K> right) {
-//        BiBooleanExpression biBooleanExpression = new BiBooleanExpression(left, Criteria.GT, right);
-//        return new Condition(biBooleanExpression);
-//    }
-//
-//    public static <K> Condition gt_eq(Expression<K> left,Expression<K> right) {
-//        BiBooleanExpression biBooleanExpression = new BiBooleanExpression(left, Criteria.GT_EQ, right);
-//        return new Condition(biBooleanExpression);
-//    }
-//
-//    public static <K> Condition ls_eq(Expression<K> left,Expression<K> right) {
-//        BiBooleanExpression biBooleanExpression = new BiBooleanExpression(left, Criteria.LS_EQ, right);
-//        return new Condition(biBooleanExpression);
-//    }
-//
-//    public static Condition like(Expression<String> left,Expression<String> right) {
-//        BiBooleanExpression biBooleanExpression = new BiBooleanExpression(left, Criteria.LIKE, right);
-//        return new Condition(biBooleanExpression);
-//    }
-//
-//    public static Condition isNull(Expression<String> left) {
-//        IsNullBooleanTypeExpression biBooleanExpression = new IsNullBooleanTypeExpression(left);
-//        return new Condition(biBooleanExpression);
-//    }
-
-//    public void fillValues(List<Object> values) {
-//        fillValues(values, booleanExpression.getChildExpressions());
-//
-//        for (Condition childCondition: childConditions) {
-//            childCondition.fillValues(values);
-//        }
-//    }
-//
-//    private static void fillValues(List<Object> values, List<Expression> selectExpressions) {
-//        for (Expression expression : selectExpressions) {
-//            if (expression instanceof ParamExpression) {
-//                ParamExpression paramExpression = (ParamExpression) expression;
-//                values.add(paramExpression.value);
-//            }
-//        }
-//    }
-
-
-//    public void fillParamExpressions(List<ParamExpression> paramExpressions) {
-//        fillParamExpressions(paramExpressions, booleanExpression.getChildExpressions());
-//        for (Condition childCondition : childConditions) {
-//            childCondition.fillParamExpressions(paramExpressions);
-//        }
-//    }
-//
-//    private static void fillParamExpressions(List<ParamExpression> paramExpressions, List<Expression> childExpressions) {
-//        for (Expression childExpression : childExpressions) {
-//            if (childExpression instanceof ParamExpression) {
-//                ParamExpression paramExpression = (ParamExpression) childExpression;
-//                paramExpressions.add(paramExpression);
-//            }
-//        }
-//    }
 }

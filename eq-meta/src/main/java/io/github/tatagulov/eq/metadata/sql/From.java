@@ -38,6 +38,13 @@ public abstract class From {
         return this;
     }
 
+    public <T extends From, L extends From, M> L join(JoinType joinType, L joinTable,Condition condition) {
+        joinTable.joinType = joinType;
+        joinTable.where(condition);
+        joinTable.parent = this;
+        return joinTable;
+    }
+
     public <T extends From, L extends From, M> L join(JoinType joinType, BaseColumn<T, M> leftSelectColumn, BaseColumn<L, M> rightSelectColumn) {
         final L selectTable = rightSelectColumn.getSelectTable();
         selectTable.joinType = joinType;
