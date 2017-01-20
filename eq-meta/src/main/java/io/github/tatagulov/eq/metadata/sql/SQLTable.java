@@ -1,6 +1,7 @@
 package io.github.tatagulov.eq.metadata.sql;
 
 import io.github.tatagulov.eq.metadata.api.Table;
+import io.github.tatagulov.eq.metadata.exception.ColumnNotFoundException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,13 @@ public class SQLTable<K extends SQLTable<K>> extends From {
 
     public SQLTable(Table table) {
         this.table = table;
+    }
+
+    public SQLColumn<K,?> getSQLColumn(String name) throws ColumnNotFoundException {
+        for (SQLColumn<K, ?> sqlColumn : sqlColumns) {
+            if (sqlColumn.column.columnName.equals(name)) return sqlColumn;
+        }
+        throw new ColumnNotFoundException(name);
     }
 
     @Override

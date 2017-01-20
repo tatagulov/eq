@@ -1,9 +1,9 @@
-create EQTable person_type (
+create table person_type (
   person_type_id SMALLINT NOT NULL PRIMARY KEY,
   person_type_name VARCHAR(255) NOT NULL
 );
 
-create EQTable person (
+create table person (
   person_id INTEGER not null PRIMARY KEY,
   person_type_id SMALLINT NOT NULL REFERENCES person_type(person_type_id),
   first_name VARCHAR (255) not null,
@@ -11,12 +11,12 @@ create EQTable person (
   birth_date date
 );
 
-CREATE EQTable dep (
+CREATE table dep (
   dep_id SMALLINT NOT NULL PRIMARY KEY,
   dep_name VARCHAR(255) NOT NULL
 );
 
-create EQTable person_move (
+create table person_move (
   person_move_id INTEGER NOT NULL PRIMARY KEY,
   person_id INTEGER NOT NULL REFERENCES person(person_id),
   from_dep_id SMALLINT NOT NULL REFERENCES dep(dep_id),

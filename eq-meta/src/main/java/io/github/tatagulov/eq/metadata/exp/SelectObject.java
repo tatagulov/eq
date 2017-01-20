@@ -11,6 +11,8 @@ import io.github.tatagulov.eq.metadata.sql.SQLColumn;
 import io.github.tatagulov.eq.metadata.sql.SQLTable;
 import io.github.tatagulov.eq.metadata.sql.api.Select;
 
+import java.lang.reflect.Field;
+
 public class SelectObject {
 
     public <T>  T select(T object, DataBase dataBase) throws SchemaNotFoundException, TableNotFoundException {
@@ -20,16 +22,26 @@ public class SelectObject {
 
         String schemaName = eqTable.schema();
         String tableName = eqTable.value();
+        Schema schema = dataBase.getSchema(schemaName);
+        Table<?> table = schema.getTable(tableName);
+
+        Field[] fields = clazz.getFields();
+        for (Field field : fields) {
+            EQColumn eqColumn = field.getAnnotation(EQColumn.class);
+            if (eqColumn!=null) {
+                String columnName = eqColumn.value();
+            }
+        }
 
         Select select = new PostgresSelect();
 
 
-        Schema schema = dataBase.getSchema(schemaName);
-        Table<?> table = schema.getTable(tableName);
         SQLTable<?> sqlTable = new SQLTable(table);
         for (Column<?, ?> column : table.columns) {
-            SQLColumn<?,?> sqlColumn = new SQLColumn(sqlTable,column);
+
         }
         return null;
     }
+
+
 }

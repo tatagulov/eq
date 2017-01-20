@@ -4,7 +4,7 @@ import io.github.tatagulov.eq.metadata.exp.EQColumn;
 import io.github.tatagulov.eq.metadata.exp.EQTable;
 import io.github.tatagulov.test.testData.entity.db.public_.Person;
 
-@EQTable(value = "person",clazz = Person.class)
+@EQTable(value = "person",schema = "public")
 public class AnnotationObject {
 
     @EQColumn("person_id")

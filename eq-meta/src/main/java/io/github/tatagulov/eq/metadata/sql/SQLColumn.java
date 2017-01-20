@@ -1,6 +1,7 @@
 package io.github.tatagulov.eq.metadata.sql;
 
 import io.github.tatagulov.eq.metadata.api.Column;
+import io.github.tatagulov.eq.metadata.exception.ReferenceNotFoundException;
 
 public class SQLColumn<K extends SQLTable<K>,T> extends BaseColumn<K,T> {
     public final K dbTable;
