@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.tatagulov</groupId>
         <artifactId>eq</artifactId>
-        <version>0.6.9</version>
+        <version>0.6.10</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>eq-gen</artifactId>
@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.github.tatagulov</groupId>
             <artifactId>eq-meta</artifactId>
-            <version>0.6.9</version>
+            <version>0.6.10</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

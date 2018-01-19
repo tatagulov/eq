@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.github.tatagulov</groupId>
         <artifactId>eq</artifactId>
-        <version>0.6.9</version>
+        <version>0.6.10</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>eq-test</artifactId>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>io.github.tatagulov</groupId>
             <artifactId>eq-meta</artifactId>
-            <version>0.6.9</version>
+            <version>0.6.10</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -47,7 +47,7 @@
             <plugin>
                 <groupId>io.github.tatagulov</groupId>
                 <artifactId>eq-gen</artifactId>
-                <version>0.6.9</version>
+                <version>0.6.10</version>
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
                     <url>jdbc:postgresql://localhost:5432/postgres</url>
