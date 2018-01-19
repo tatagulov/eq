@@ -261,6 +261,7 @@ public class BaseSelect extends From implements Select {
         for (BaseSelect baseSelect : unionAllList) {
             paramExpressions.addAll(baseSelect.getParamExpressions());
         }
+        paramExpressions.addAll(super.getParamExpressions());
         return paramExpressions;
     }
 

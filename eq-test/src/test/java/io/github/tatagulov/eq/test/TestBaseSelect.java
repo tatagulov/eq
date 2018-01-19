@@ -518,6 +518,41 @@ public class TestBaseSelect {
     }
 
     @Test
+    public void testSubSelectUseClassWithWhere() throws Exception {
+
+        final PersonMove personMove = new PersonMove();
+        personMove.where(personMove.person_move_id.eq(TEST_INT_VALUE2));
+        class MyView extends PostgresSelect {
+            private AliasColumn<MyView,Integer> personId = new AliasColumn<MyView,Integer>(this,personMove.person_id);
+            private AliasColumn<MyView,Long> personCnt = new AliasColumn<MyView,Long>(this, count(personMove.person_id).as("cnt"));
+        }
+
+        Person person = new Person();
+        MyView myView = person.join(JoinType.inner, person.person_id, new MyView().personId);
+        myView.where(myView.personId.eq(TEST_INT_VALUE));
+
+        Select select = createSelect();
+        select.select(person.first_name);
+        select.select(person.last_name);
+        select.select(myView.personCnt);
+
+        String sql = select.getSQL();
+        Object[] values = select.getValues();
+
+        assertEquals(sql, "select t0.first_name,t0.last_name,t1.cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 where t2.person_move_id = ? group by t2.person_id) t1 on t0.person_id = t1.person_id and t1.person_id = ?");
+        assertEquals(values.length, 2);
+        assertEquals(values[0], TEST_INT_VALUE2);
+        assertEquals(values[1], TEST_INT_VALUE);
+
+        String countSQL = select.getCountSQL();
+        Object[] countValues = select.getCountValues();
+        assertEquals(countSQL, "select count(*) as cnt from public.person t0 inner join (select t2.person_id,count(t2.person_id) as cnt from public.person_move t2 where t2.person_move_id = ? group by t2.person_id) t1 on t0.person_id = t1.person_id and t1.person_id = ?");
+        assertEquals(countValues.length, 2);
+        assertEquals(countValues[0], TEST_INT_VALUE2);
+        assertEquals(countValues[1], TEST_INT_VALUE);
+    }
+
+    @Test
     public void testSubSelectInWhere() throws Exception {
         PersonMove personMove = new PersonMove();
         personMove.where(personMove.from_dep_id.eq(param(TEST_SHORT_VALUE)));
